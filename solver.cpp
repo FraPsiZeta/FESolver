@@ -2,6 +2,8 @@
 #include <cmath>
 #include <vector>
 
+
+//Draw the domain, it will be replace by something more sofisticated in the future
 struct Draw_domain
 {
 	Draw_domain(int height, int width)
