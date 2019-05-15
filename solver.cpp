@@ -39,6 +39,8 @@ for (int j=0; j<height+2; j++)
 
 };
 
+
+//Choose bundary conditions, will be changed as well
 struct define_bc
 {
 	
