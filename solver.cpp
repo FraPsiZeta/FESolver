@@ -1,4 +1,6 @@
 #include <iostream>
+#include <stdexcept>
+#include <algorithm>
 #include <cmath>
 #include <vector>
 
@@ -8,6 +10,7 @@ struct Draw_domain
 {
 	Draw_domain(int height, int width)
 	{
+	if ( height < 100 && width <60){
 	std::cout<<'\n'<<"This is your domain:"<<std::endl;
 for (int j=0; j<height+2; j++)
 	{
@@ -36,6 +39,13 @@ for (int j=0; j<height+2; j++)
 	}
 	std::cout<<'\n';
 	}
+	else
+	{
+		std::cout<<"\n#####################################################################"<<std::endl;
+		std::cout<<"# Your domain is too big to be drawn, still good to compute though. #"<<std::endl;
+		std::cout<<"#####################################################################\n"<<std::endl;
+	}
+	}
 
 };
 
@@ -43,9 +53,11 @@ for (int j=0; j<height+2; j++)
 //Choose bundary conditions, will be changed as well
 struct define_bc
 {
-	
+
 	int boundary_values[4];
-	
+ 	int accepted_boundary_values[3] {10, 11, 12};	
+	int* test_bc = std::end(accepted_boundary_values);
+
 	define_bc()
 	{
 		std::cout<<"Choose the boundary conditions:"<<'\n'
@@ -58,22 +70,27 @@ struct define_bc
 			 <<"      1      "<<'\n'
 		 	 <<"Inlet-->10"<<'\n'
 		 	 <<"Outlet-->11"<<'\n'
-		 	 <<"Wall-->12"<<'\n'
-		 	 <<"Condition n°1: ";
-		std::cin>>boundary_values[0];
-		std::cout<<"Condition n°2: ";
-		std::cin>>boundary_values[1];
-		std::cout<<"Condition n°3: ";
-		std::cin>>boundary_values[2];
-		std::cout<<"Condition n°4: ";
-		std::cin>>boundary_values[3];
+		 	 <<"Wall-->12"<<'\n';
+
+		//Test the validity of each boundary conditions, if invalid it throws an exception and will prompt the user to insert a new one
+		int j = 0;
+		for (auto i : boundary_values)
+		{
+			std::cout<<"Condition n°"<<j+1<<": ";
+			std::cin>>boundary_values[j];
+			if (test_bc == std::find(std::begin(accepted_boundary_values), std::end(accepted_boundary_values), boundary_values[j]) )
+			{
+				throw std::runtime_error("Invalid Boundary Condition");
+			}
+			j++;
+		}
 	}
 };
 
-class Mesh
+class Element
 {
 private:
-	int num_elements;
+	int dof;
 
 
 
@@ -83,20 +100,70 @@ private:
 int main()
 {
 
-//Definizione del sistema e input:
+//Definizione del sistema e input (+input sanitasing):
 int width, height;
 
-std::cout<<"Choose the domain width and height. "<<'\n';
-std::cout<<"x: ";
-std::cin>>width;
-std::cout<<"y: ";
-std::cin>>height;
+std::cout<<"Choose the domain width and height (just integers). "<<'\n';
+for (;;) {
+	std::cout<<"x: ";
+        std::cin >> width;
+
+        if (std::cin.fail()) {
+            std::cerr << "Not a valid input." << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+
+        if (width < 1 || width > 10000) {
+            std::cerr << "Sorry, the number is out of range." << std::endl;
+            continue;
+        }
+	//Valid entry
+	std::cout<<"x = "<<width<<'\n';
+        break;
+    }
+
+
+for (;;) {
+	std::cout<<"y: ";
+        std::cin >> height;
+
+        if (std::cin.fail()) {
+            std::cerr << "Not a valid input." << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+
+        if (height < 1 || height > 10000) {
+            std::cerr << "Sorry, the number is out of range." << std::endl;
+            continue;
+        }
+	//Valid entry
+	std::cout<<"y = "<<height<<'\n';
+        break;
+    }
 
 Draw_domain rect(height,width);
 
-define_bc conditions;
-
-
+bool loop=true;
+while(loop)
+{
+	loop=false;
+	try{
+	define_bc conditions;} catch (std::runtime_error err) {
+		std::cout<<err.what()<<"\nWant to try again? y or n"<<std::endl;
+		char c;
+		std::cin>> c;
+		if(!std::cin || c == 'n')
+		{
+			std::cout<<"Quitting..."<<'\n';
+			return -1;
+		}
+       		loop = true;	
+	}
+}
 
 return 0;
 }
