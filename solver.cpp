@@ -78,8 +78,12 @@ struct define_bc
 		{
 			std::cout<<"Condition n°"<<j+1<<": ";
 			std::cin>>boundary_values[j];
-			if (test_bc == std::find(std::begin(accepted_boundary_values), std::end(accepted_boundary_values), boundary_values[j]) )
+    		        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            		std::cin.clear();
+			if (test_bc == std::find(std::begin(accepted_boundary_values), std::end(accepted_boundary_values), boundary_values[j]) || std::cin.fail() )
 			{
+            			std::cin.clear();
+    			        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 				throw std::runtime_error("Invalid Boundary Condition");
 			}
 			j++;
@@ -107,6 +111,7 @@ std::cout<<"Choose the domain width and height (just integers). "<<'\n';
 for (;;) {
 	std::cout<<"x: ";
         std::cin >> width;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
         if (std::cin.fail()) {
             std::cerr << "Not a valid input." << std::endl;
@@ -128,6 +133,7 @@ for (;;) {
 for (;;) {
 	std::cout<<"y: ";
         std::cin >> height;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
         if (std::cin.fail()) {
             std::cerr << "Not a valid input." << std::endl;
@@ -156,6 +162,8 @@ while(loop)
 		std::cout<<err.what()<<"\nWant to try again? y or n"<<std::endl;
 		char c;
 		std::cin>> c;
+            	std::cin.clear();
+            	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		if(!std::cin || c == 'n')
 		{
 			std::cout<<"Quitting..."<<'\n';
