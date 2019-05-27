@@ -1,5 +1,5 @@
 CXX= c++
-ROOTPATH= $$HOME/Software/FESolver
+ROOTPATH= $(CURDIR)
 CPPFLAGS= --std=c++14 -I $(ROOTPATH)/Eigen/ \
 	              -I $(ROOTPATH)/include
 CXXFLAGS= -Wall
@@ -17,9 +17,6 @@ solver: $(OBJS)
 
 $(OBJS): $(OPATH)/%.o : %.cpp interactive_init.h 
 	$(CXX) $(CPPFLAGS) -c $< -o $@
-
-#$(OPATH)/interactive_init.o: interactive_init.cpp interactive_init.h 
-#	$(CXX) $(CPPFLAGS) -c $< -o $@
 
 clean: 
 	rm -f $(SRCPATH)/*.o  $(OPATH)/*.o solver
