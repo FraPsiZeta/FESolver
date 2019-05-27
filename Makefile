@@ -1,14 +1,25 @@
-CPPFLAGS= --std=c++14 -I ~/Software/FESolver/Eigen/
+CXX= c++
+ROOTPATH= $$HOME/Software/FESolver
+CPPFLAGS= --std=c++14 -I $(ROOTPATH)/Eigen/ \
+	              -I $(ROOTPATH)/include
 CXXFLAGS= -Wall
+OPATH= $(ROOTPATH)/obj
+SRCPATH= $(ROOTPATH)/src
+SRCS= $(wildcard ./src/*.cpp)
+OBJS= $(addprefix $(OPATH)/,$(notdir $(patsubst %.cpp, %.o,$(SRCS))))
 
-all: solver.o test.o
-	c++ $(CXXFLAGS) -o solver solver.o test.o
+vpath %.h include
+vpath %.cpp src
+vpath %.o obj
 
-solver.o: solver.cpp test.h
-	c++ $(CPPFLAGS)	-c solver.cpp
+solver: $(OBJS) 
+	$(CXX) $(CXXFLAGS) -o $@ $^ 
 
-test.o: test.cpp test.h
-	c++ $(CPPFLAGS) -c test.cpp
+$(OBJS): $(OPATH)/%.o : %.cpp interactive_init.h 
+	$(CXX) $(CPPFLAGS) -c $< -o $@
+
+#$(OPATH)/interactive_init.o: interactive_init.cpp interactive_init.h 
+#	$(CXX) $(CPPFLAGS) -c $< -o $@
 
 clean: 
-	rm -f test.o solver.o solver
+	rm -f $(SRCPATH)/*.o  $(OPATH)/*.o solver
