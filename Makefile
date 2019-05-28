@@ -12,10 +12,13 @@ vpath %.h include
 vpath %.cpp src
 vpath %.o obj
 
-solver: $(OBJS) 
-	$(CXX) $(CXXFLAGS) -o $@ $^ 
+solver: $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ \
 
 $(OBJS): $(OPATH)/%.o : %.cpp interactive_init.h 
+	@if [ ! -d $(OPATH) ]; then \
+		mkdir -p $(OPATH); \
+	fi	
 	$(CXX) $(CPPFLAGS) -c $< -o $@
 
 clean: 
