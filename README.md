@@ -1,3 +1,3 @@
 # FESolver
 
-A Finite Element solver for differential equations, sort of.
+A 'wanna be' Finite Element solver for differential equations.
